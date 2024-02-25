@@ -28,11 +28,11 @@ export default function handler(req, res) {
             </style>
         </head>
         <body>
-            <div>IP to redirect: ${ip}</div>
+            <div>Redirecting you... ${ip}</div>
             <script>
                 setTimeout(function() {
                     window.location.href = '${redirectUrl}';
-                }, 1000);
+                }, 50);
             </script>
         </body>
         </html>
