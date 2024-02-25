@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Check</title>
+    <title>ZhehanZ Connect</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #ffffff;
             color: #007bff;
             margin: 0;
@@ -38,22 +38,49 @@
             margin-top: 20px;
             color: #c8c8c8;
         }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8em;
+            color: #808080;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
     <div class="loader"></div>
-    <div>Redirecting you to ZhehanZ Connect...</div>
-    <div class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6.</div>
+    <div id="redirectMessage">Redirecting you to ZhehanZ Connect...</div>
+    <div id="networkCheckMessage" class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6.</div>
+    <footer>ZhehanZ Connect © 2024</footer>
     <script>
+        const browserLanguage = navigator.language || navigator.userLanguage;
+        const messages = {
+            en: {
+                redirect: "Redirecting you to ZhehanZ Connect...",
+                networkCheck: "We're running a check to see if your network is capable of handling an optimized connection via IPV6."
+            },
+            zh: {
+                redirect: "正在将您重定向到ZhehanZ Connect...",
+                networkCheck: "我们正在检查以确认您的网络是否支持通过IPV6进行优化连接。"
+            }
+        };
+
+        const language = browserLanguage.startsWith('zh') ? 'zh' : 'en';
+        
+        document.getElementById('redirectMessage').textContent = messages[language].redirect;
+        document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
+
         // Attempt to load a resource from the IPv6 domain
         fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
             .then(response => {
-                // IPv6 connection is likely available
                 const originalPathAndQuery = window.location.pathname + window.location.search;
                 window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
             })
             .catch(error => {
-                // Fallback to IPv4 if IPv6 connection fails
                 const originalPathAndQuery = window.location.pathname + window.location.search;
                 window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
             });
