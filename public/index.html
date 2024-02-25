@@ -75,14 +75,17 @@
         document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
 
         // Attempt to load a resource from the IPv6 domain
-        fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
-            .then(response => {
-                const originalPathAndQuery = window.location.pathname + window.location.search;
-                window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
-            })
-            .catch(error => {
-                const originalPathAndQuery = window.location.pathname + window.location.search;
-                window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
+fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+    .then(response => {
+        setTimeout(() => { // Wait for 2 seconds before redirecting
+            const originalPathAndQuery = window.location.pathname + window.location.search;
+            window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
+        }, 2000); // 2000 milliseconds = 2 seconds
+    })
+    .catch(error => {
+        const originalPathAndQuery = window.location.pathname + window.location.search;
+        window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
+    });
             });
     </script>
 </body>
