@@ -1,13 +1,40 @@
-// api/redirect.js
+// api/showAndRedirect.js
 export default function handler(req, res) {
-    // Vercel automatically provides the real client IP in the "x-forwarded-for" header
     const ip = req.headers['x-forwarded-for'] || '';
-    
-    // Determine whether the IP is IPv4 or IPv6
-    // This is a basic check based on the presence of ":" indicating an IPv6 address
     const isIPv6 = ip.includes(':');
     const redirectUrl = isIPv6 ? 'https://v6-connect.zheha.nz' : 'https://v4-connect.zheha.nz';
 
-    // Redirect the client to the determined URL
-    res.redirect(redirectUrl);
+    // Serve HTML with the user's IP and redirection logic
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Redirecting...</title>
+            <style>
+                body {
+                    font-family: 'Orbitron', sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    height: 100vh;
+                    background-color: #000;
+                    color: #0f0;
+                }
+                @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+            </style>
+        </head>
+        <body>
+            <div>IP to redirect: ${ip}</div>
+            <script>
+                setTimeout(function() {
+                    window.location.href = '${redirectUrl}';
+                }, 1000);
+            </script>
+        </body>
+        </html>
+    `);
 }
