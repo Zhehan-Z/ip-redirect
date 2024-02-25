@@ -37,6 +37,12 @@
         .message {
             margin-top: 20px;
             color: #c8c8c8;
+            font-size: 0.9em;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            width: 80%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         footer {
@@ -53,8 +59,8 @@
 </head>
 <body>
     <div class="loader"></div>
-    <div id="redirectMessage">Redirecting you to ZhehanZ Connect...</div>
-    <div id="networkCheckMessage" class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6.</div>
+    <div id="redirectMessage">ZhehanZ Connect Running</div>
+    <div id="networkCheckMessage" class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6. If an alternative connection method is used, you may have to log in again.</div>
     <footer>ZhehanZ Connect © 2024</footer>
     <script>
         const browserLanguage = navigator.language || navigator.userLanguage;
@@ -74,20 +80,17 @@
         document.getElementById('redirectMessage').textContent = messages[language].redirect;
         document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
 
-        // Attempt to load a resource from the IPv6 domain
-fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
-    .then(response => {
-        // If the fetch promise resolves, it indicates potential IPv6 connectivity
-        setTimeout(() => { // Wait for 2 seconds before redirecting for IPv6
-            const originalPathAndQuery = window.location.pathname + window.location.search;
-            window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
-        }, 2000); // Delay redirection to IPv6 domain by 2 seconds
-    })
-    .catch(error => {
-        // Immediate redirection for IPv4 clients if the IPv6 check fails
-        const originalPathAndQuery = window.location.pathname + window.location.search;
-        window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
-    });
+        fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+            .then(response => {
+                setTimeout(() => { 
+                    const originalPathAndQuery = window.location.pathname + window.location.search;
+                    window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
+                }, 2000);
+            })
+            .catch(error => {
+                const originalPathAndQuery = window.location.pathname + window.location.search;
+                window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
+            });
     </script>
 </body>
 </html>
