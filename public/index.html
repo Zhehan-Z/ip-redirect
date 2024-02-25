@@ -5,22 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+
         body {
             font-family: 'Orbitron', sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             height: 100vh;
             background-color: #ffffff;
-            color: #000000;
+            color: #0044cc; /* Blue text */
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        @import url('https://fonts.geekzu.org/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #0044cc; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <div class="loader"></div>
     <div>Redirecting you to ZhehanZ Connect...</div>
-    <div>We're running a check to see if your network is capable of handling an optimized connection via IPV6.</div>
+    <div class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6.</div>
 <script>
     // Attempt to load a resource from the IPv6 domain
     fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
