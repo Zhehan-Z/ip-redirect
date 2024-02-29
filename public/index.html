@@ -62,50 +62,56 @@
     <div id="networkCheckMessage" class="message">We're running a check to see if your network is capable of handling an optimized connection via IPV6. If an alternative connection method is used, you may have to log in again.</div>
     <footer>ZhehanZ Connect © 2024</footer>
     <script>
-        const browserLanguage = navigator.language || navigator.userLanguage;
-        const messages = {
-            en: {
-                redirect: "ZhehanZ Connect Running",
-                networkCheck: "We're running a check to see if your network is capable of handling an optimized connection via IPV6. If an alternative connection method is used, you may have to log in again."
-            },
-            zh: {
-                redirect: "ZhehanZ Connect 运行中",
-                networkCheck: "我们正在运行一个检查，以了解您的网络是否支持通过IPV6进行优化连接，请您稍作等候。若您的连接方式发生变化，您可能需要输入信息以重新登录。"
-            }
-        };
+  const browserLanguage = navigator.language || navigator.userLanguage;
+  const messages = {
+      en: {
+          redirect: "ZhehanZ Connect Running",
+          networkCheck: "We're running a check to see if your network is capable of handling an optimized connection via IPV6. If an alternative connection method is used, you may have to log in again."
+      },
+      zh: {
+          redirect: "ZhehanZ Connect 运行中",
+          networkCheck: "我们正在运行一个检查，以了解您的网络是否支持通过IPV6进行优化连接，请您稍作等候。若您的连接方式发生变化，您可能需要输入信息以重新登录。"
+      }
+  };
 
-        const language = browserLanguage.startsWith('zh') ? 'zh' : 'en';
-        document.getElementById('redirectMessage').textContent = messages[language].redirect;
-        document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
+  const language = browserLanguage.startsWith('zh') ? 'zh' : 'en';
+  document.getElementById('redirectMessage').textContent = messages[language].redirect;
+  document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
 
-        checkIPv6().then(isIPv6Available => {
-            if (!isIPv6Available) {
-                fetch('/api/checkRedirect')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.port) {
-                        const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-                        window.location.href = `https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery}`;
-                    } else {
-                        redirectToIPv4();
-                    }
-                })
-                .catch(() => {
-                    redirectToIPv4();
-                });
-            }
-        });
+  function checkIPv6() {
+      return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+          .then(() => true)
+          .catch(() => false);
+  }
 
-        function checkIPv6() {
-            return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
-                .then(() => true)
-                .catch(() => false);
-        }
+  function checkNatConnect() {
+      return fetch('/api/checkRedirect')
+          .then(response => response.json())
+          .then(data => {
+              if (data.port) {
+                  const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+                  window.location.href = `https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery}`;
+                  return true;
+              }
+              return false;
+          })
+          .catch(() => false);
+  }
 
-        function redirectToIPv4() {
-            const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-            window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
-        }
-    </script>
+  function redirectToIPv4() {
+      const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+      window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
+  }
+
+  checkIPv6().then(isIPv6Available => {
+      if (!isIPv6Available) {
+          checkNatConnect().then(isNatAvailable => {
+              if (!isNatAvailable) {
+                  redirectToIPv4();
+              }
+          });
+      }
+  });
+</script>
 </body>
 </html>
