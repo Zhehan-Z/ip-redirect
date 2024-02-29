@@ -75,20 +75,8 @@
         };
 
         const language = browserLanguage.startsWith('zh') ? 'zh' : 'en';
-        
         document.getElementById('redirectMessage').textContent = messages[language].redirect;
         document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
-
-        const checkIPv6 = () => {
-            return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
-                .then(() => true)
-                .catch(() => false);
-        };
-
-        const redirectToIPv4 = () => {
-            const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-            window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
-        };
 
         checkIPv6().then(isIPv6Available => {
             if (!isIPv6Available) {
@@ -97,17 +85,27 @@
                 .then(data => {
                     if (data.port) {
                         const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-window.location.href = https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery};
-} else {
-redirectToIPv4();
-}
-})
-.catch(() => {
-redirectToIPv4();
-});
-}
-});
+                        window.location.href = `https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery}`;
+                    } else {
+                        redirectToIPv4();
+                    }
+                })
+                .catch(() => {
+                    redirectToIPv4();
+                });
+            }
+        });
 
+        function checkIPv6() {
+            return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+                .then(() => true)
+                .catch(() => false);
+        }
 
+        function redirectToIPv4() {
+            const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+            window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
+        }
+    </script>
 </body>
 </html>
