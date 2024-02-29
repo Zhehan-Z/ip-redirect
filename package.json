@@ -1,0 +1,14 @@
+{
+  "name": "ZhehanZ-Connect",
+  "version": "1.0.0",
+  "description": "Connector for my NAS via IPV4, IPV6 and NAT",
+  "main": "index.js",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
