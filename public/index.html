@@ -74,13 +74,20 @@
       }
   };
 
-  const language = browserLanguage.startsWith('zh') ? 'zh' : 'en';
   document.getElementById('redirectMessage').textContent = messages[language].redirect;
   document.getElementById('networkCheckMessage').textContent = messages[language].networkCheck;
 
+  function redirectToIPv6() {
+      const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+      window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
+  }
+
   function checkIPv6() {
-      return fetch('https://v6-connect.zheha.nz:2053/webman/login_background.jpg?id=1', { mode: 'no-cors' })
-          .then(() => true)
+      return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+          .then(() => {
+              redirectToIPv6();
+              return true;
+          })
           .catch(() => false);
   }
 
