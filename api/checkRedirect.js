@@ -2,8 +2,8 @@ const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
   try {
-    console.log('Fetching http://zhehanz.yicp.fun');
-    const response = await fetch('http://zhehanz.yicp.fun', { redirect: 'manual' });
+    console.log('Fetching https://zhehanz.yicp.fun');
+    const response = await fetch('https://zhehanz.yicp.fun', { redirect: 'manual' });
     console.log('Response status:', response.status);
 
     if (response.status >= 300 && response.status < 400) {
