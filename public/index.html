@@ -77,65 +77,77 @@
     <div id="redirectMessage"></div>
     <div id="networkCheckMessage" class="message"></div>
     <footer>ZhehanZ Connect © 2024</footer>
-    <script>
-      const browserLanguage = navigator.language || navigator.userLanguage.startsWith('zh') ? 'zh' : 'en';
-      
-      const messages = {
-          en: {
-              redirect: "Connecting to ZhehanZ",
-              networkCheck: "We're running a check to select an optimized route for your current connection method, please wait a few seconds. If an alternative connection method is used, you may have to log in again."
-          },
-          zh: {
-              redirect: "正在连接到 ZhehanZ",
-              networkCheck: "我们正在运行一个检查，以确认适用于您当前连接方式的最佳路由，请您稍等几秒钟。若您的连接方式发生变化，您可能需要输入信息以重新登录。"
-          }
-      };
+<script>
+  const browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
+  
+  const messages = {
+      en: {
+          redirect: "Connecting to ZhehanZ",
+          networkCheck: "We're running a check to select an optimized route for your current connection method, please wait a few seconds. If an alternative connection method is used, you may have to log in again."
+      },
+      zh: {
+          redirect: "正在连接到 ZhehanZ",
+          networkCheck: "我们正在运行一个检查，以确认适用于您当前连接方式的最佳路由，请您稍等几秒钟。若您的连接方式发生变化，您可能需要输入信息以重新登录。"
+      }
+  };
 
-      document.getElementById('redirectMessage').textContent = messages[browserLanguage].redirect;
-      document.getElementById('networkCheckMessage').textContent = messages[browserLanguage].networkCheck;
+  document.getElementById('redirectMessage').textContent = messages[browserLanguage].redirect;
+  document.getElementById('networkCheckMessage').textContent = messages[browserLanguage].networkCheck;
 
-      function checkIPv6() {
-          return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
-              .then(() => {
-                  redirectToIPv6();
+  function checkIPv6() {
+      return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+          .then(() => {
+              redirectTo('https://v6-connect.zheha.nz:2053');
+              return true;
+          })
+          .catch(() => false);
+  }
+
+  function checkNatConnect() {
+      return fetch('/api/checkRedirect')
+          .then(response => response.json())
+          .then(data => {
+              if (data.port) {
+                  redirectTo(`https://${data.port}-nat-connect.zheha.nz:${data.port}`);
                   return true;
-              })
-              .catch(() => false);
-      }
+              }
+              return false;
+          })
+          .catch(() => false);
+  }
 
-      function redirectToIPv6() {
-          const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-          window.location.href = `https://v6-connect.zheha.nz:2053${originalPathAndQuery}`;
-      }
+  function checkTunnelConnect() {
+      return fetch('https://tunnel-connect.zheha.nz/test-resource', { mode: 'no-cors' })
+          .then(() => {
+              redirectTo('https://tunnel-connect.zheha.nz');
+              return true;
+          })
+          .catch(() => false);
+  }
 
-      function checkNatConnect() {
-          return fetch('/api/checkRedirect')
-              .then(response => response.json())
-              .then(data => {
-                  if (data.port) {
-                      const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-                      window.location.href = `https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery}`;
-                      return true;
-                  }
-                  return false;
-              })
-              .catch(() => false);
-      }
+  function redirectToIPv4() {
+      const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+      redirectTo(`https://v4-connect.zheha.nz:2053${originalPathAndQuery}`);
+  }
 
-      function redirectToIPv4() {
-          const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
-          window.location.href = `https://v4-connect.zheha.nz:2053${originalPathAndQuery}`;
-      }
+  function redirectTo(url) {
+      window.location.href = url;
+  }
 
-      checkIPv6().then(isIPv6Available => {
-          if (!isIPv6Available) {
-              checkNatConnect().then(isNatAvailable => {
-                  if (!isNatAvailable) {
-                      redirectToIPv4();
-                  }
-              });
-          }
-      });
-    </script>
+  // Conduct the checks in sequence: IPv6 -> NAT -> Tunnel -> IPv4
+  checkIPv6().then(isIPv6Available => {
+      if (!isIPv6Available) {
+          checkNatConnect().then(isNatAvailable => {
+              if (!isNatAvailable) {
+                  checkTunnelConnect().then(isTunnelAvailable => {
+                      if (!isTunnelAvailable) {
+                          redirectToIPv4();
+                      }
+                  });
+              }
+          });
+      }
+  });
+</script>
 </body>
 </html>
