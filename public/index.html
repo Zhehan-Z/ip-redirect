@@ -95,20 +95,22 @@
   document.getElementById('networkCheckMessage').textContent = messages[browserLanguage].networkCheck;
 
   function checkIPv6() {
+  const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
       return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
           .then(() => {
-              redirectTo('https://v6-connect.zheha.nz:2053');
+              redirectTo('https://v6-connect.zheha.nz:2053${originalPathAndQuery}');
               return true;
           })
           .catch(() => false);
   }
 
   function checkNatConnect() {
+  const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
       return fetch('/api/checkRedirect')
           .then(response => response.json())
           .then(data => {
               if (data.port) {
-                  redirectTo(`https://${data.port}-nat-connect.zheha.nz:${data.port}`);
+                  redirectTo(`https://${data.port}-nat-connect.zheha.nz:${data.port}${originalPathAndQuery}`);
                   return true;
               }
               return false;
@@ -117,9 +119,10 @@
   }
 
   function checkTunnelConnect() {
+  const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
       return fetch('https://tunnel-connect.zheha.nz/test-resource', { mode: 'no-cors' })
           .then(() => {
-              redirectTo('https://tunnel-connect.zheha.nz');
+              redirectTo('https://tunnel-connect.zheha.nz${originalPathAndQuery}');
               return true;
           })
           .catch(() => false);
