@@ -94,6 +94,16 @@
   document.getElementById('redirectMessage').textContent = messages[browserLanguage].redirect;
   document.getElementById('networkCheckMessage').textContent = messages[browserLanguage].networkCheck;
 
+  function checkLocalConnect() {
+      const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
+      return fetch('https://local-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
+          .then(() => {
+              redirectTo(`https://local-connect.zheha.nz:2053${originalPathAndQuery}`);
+              return true;
+          })
+          .catch(() => false);
+  }
+
   function checkIPv6() {
       const originalPathAndQuery = window.location.pathname + window.location.search + window.location.hash;
       return fetch('https://v6-connect.zheha.nz:2053/test-resource', { mode: 'no-cors' })
@@ -137,14 +147,18 @@
       window.location.href = url;
   }
 
-  // Conduct the checks in sequence: IPv6 -> NAT -> Tunnel -> IPv4
-  checkIPv6().then(isIPv6Available => {
-      if (!isIPv6Available) {
-          checkNatConnect().then(isNatAvailable => {
-              if (!isNatAvailable) {
-                  checkTunnelConnect().then(isTunnelAvailable => {
-                      if (!isTunnelAvailable) {
-                          redirectToIPv4();
+  // Conduct the checks in sequence: Local -> IPv6 -> NAT -> Tunnel -> IPv4
+  checkLocalConnect().then(isLocalAvailable => {
+      if (!isLocalAvailable) {
+          checkIPv6().then(isIPv6Available => {
+              if (!isIPv6Available) {
+                  checkNatConnect().then(isNatAvailable => {
+                      if (!isNatAvailable) {
+                          checkTunnelConnect().then(isTunnelAvailable => {
+                              if (!isTunnelAvailable) {
+                                  redirectToIPv4();
+                              }
+                          });
                       }
                   });
               }
